@@ -2,7 +2,7 @@ apiVersion: k3d.io/v1alpha2
 kind: Simple
 name: my-cluster
 servers: 1
-agents: 9
+agents: 7
 image: rancher/k3s:v1.20.4-k3s1
 volumes:
   - volume: /Users/basil/projects:/mnt/projects
