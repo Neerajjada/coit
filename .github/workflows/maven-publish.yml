@@ -40,14 +40,17 @@ jobs:
           $incremented_version[-1] = [int]$incremented_version[-1]+1
           $incremented_version = $incremented_version -join'.'
           Write-Output "Incremented Version: $incremented_version"
-          echo "::set-output name=incremented_version::$incremented_version"            
+          echo "::set-output name=incremented_version::$incremented_version" 
+        env:
+          INPUT_VERSION: ${{ steps.read_version.outputs.version }}
+        shell: PowerShell
       - name: Build with Maven
         run: mvn install --file ${{ github.workspace }}//coit-backend1
       - name: Update Version in version.txt
         if: ${{ success() }}
         run: >
-          git config --[no-]local user.name "GitHub Actions"
-          git config --[no-]local user.email "actions@github.com"
+          git config  user.email "actions@github.com"
+          git config  user.name "GitHub Actions"
           git stash push -m "Stashing changes in coit-backend1/version" version/
           git checkout develop
           git pull origin develop
@@ -55,8 +58,10 @@ jobs:
           git restore --source=HEAD --staged -- .
           git restore --source=HEAD -- .
           git checkout HEAD -- /coit-backend1/version/version.txt
-          $incremented_version = $INPUT_VERSION
+          $incremented_version = $env:INPUT_VERSION
           (Get-Content "{{ github.workspace }}\coit-backend1\version\version.txt") -replace 'version:\s*\d+\.\d+\.\d+', "$incremented_version" | Set-Content "${{ github.workspace }}\coit-backend1\version\version.txt"
-          git add "$\coit-backend1\version\version.txt"
+          git add "{{ github.workspace }}$\coit-backend1\version\version.txt"
           git commit -m "Increment version to $incremented_version"
           git push origin develop
+        env:
+          INPUT_VERSION: ${{ steps.increment_version.outputs.incremented_version }}
