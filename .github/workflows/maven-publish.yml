@@ -28,7 +28,7 @@ jobs:
     - name: Build with Maven
       run: mvn clean install --file ${{ github.workspace }}//coit-backend1
     - name: create a container
-      run: docker build -t coit-backend1:${GIT_COMMIT} --file ${{ github.workspace }}//coit-backend1
+      run: docker build -t coit-backend1:${GIT_COMMIT} 
 
     
       
