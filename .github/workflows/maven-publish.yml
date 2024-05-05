@@ -44,10 +44,11 @@ jobs:
       - name: Build with Maven
         run: mvn clean install --file ${{ github.workspace }}//coit-backend1
       - name: Update Version in version.txt
+              if: ${{ success() }}
         run: >
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
-          git stash push -m "Stashing changes in version" version/
+          git stash push -m "Stashing changes in {{ github.workspace }}\version" version/
           git checkout develop
           git pull origin develop
           git reset HEAD .
