@@ -5,10 +5,11 @@ on:
   push:
     branches:
       - develop
-  if: github.event.pusher.name != 'Neerajjada'
+  
 jobs:
   build:
     runs-on: windows-latest
+    if: github.event.pusher.name != 'GithubActions'
     permissions:
       contents: read
       packages: write
@@ -51,7 +52,7 @@ jobs:
         if: ${{ success() }}
         run: >
           git config  user.email "actions@github.com"
-          git config  user.name "GitHub Actions"
+          git config  user.name "GitHubActions"
           git stash push -m "Stashing changes in coit-backend1/version" version/
           git checkout develop
           git pull origin develop
