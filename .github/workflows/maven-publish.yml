@@ -44,7 +44,7 @@ jobs:
       - name: Build with Maven
         run: mvn clean install --file ${{ github.workspace }}//coit-backend1
       - name: Update Version in version.txt
-              if: ${{ success() }}
+        if: ${{ success() }}
         run: >
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
