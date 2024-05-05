@@ -53,7 +53,7 @@ jobs:
           git reset HEAD .
           git restore --source=HEAD --staged -- .
           git restore --source=HEAD -- .
-          git checkout HEAD -- version/version.txt
+          git checkout HEAD -- {{ github.workspace }}version/version.txt
           $incremented_version = $INPUT_VERSION
           (Get-Content "${{ github.workspace }}\version\version.txt") -replace 'version:\s*\d+\.\d+\.\d+', "$incremented_version" | Set-Content "${{ github.workspace }}\version\version.txt"
           git add "${{ github.workspace }}\version\version.txt"
