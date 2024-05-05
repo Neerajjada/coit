@@ -46,7 +46,7 @@ jobs:
       - name: Update Version in version.txt
         if: ${{ success() }}
         run: >
-           git config -- local user.name "GitHub Actions"
+          git config -- local user.name "GitHub Actions"
           git config -- local user.email "actions@github.com"
           git stash push -m "Stashing changes in coit-backend1/version" version/
           git checkout develop
