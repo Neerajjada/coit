@@ -26,9 +26,9 @@ jobs:
         distribution: 'temurin'
         
     - name: Set up Maven
-      run: sudo $ wget https://mirrors.estointernet.in/apache/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
-           sudo $ tar -xvf apache-maven-3.6.3-bin.tar.gz
-           sudo $ mv apache-maven-3.6.3 /opt/
+      run: $ wget https://mirrors.estointernet.in/apache/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
+           $ tar -xvf apache-maven-3.6.3-bin.tar.gz
+           $ mv apache-maven-3.6.3 /opt/
     - name: Build with Maven
       run: mvn clean install --file ${{ github.workspace }}//coit-backend1
     - name: create a container
