@@ -6,9 +6,9 @@ name: Maven Package
 on:
   push:
     branches:
-    - 'develop'
+     - 'develop'
     paths:
-    - 'coit-backend1'
+     - 'coit-backend1'
   workflow_dispatch:
 
 jobs:
@@ -28,6 +28,6 @@ jobs:
         
 
     - name: Build with Maven
-      run: mvn install --file pom.xml
+      run: mvn install
 
 
