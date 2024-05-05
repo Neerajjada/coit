@@ -1,14 +1,11 @@
-# This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
-# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
-
 name: Maven Package
 
 on:
+  workflow_dispatch:
+  
   push:
     branches:
      - develop
-     
-  workflow_dispatch:
 
 jobs:
   build:
@@ -24,9 +21,46 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
+    - name: Read Version
+        id: read_version
+        run: |
+                $version = Get-Content "${{ github.workspace }}\version\version.txt" | Select-String -Pattern "version:" | ForEach-Object { $_ -replace 'version:/s*', '' }
+                Write-Output "Version_current: $version"
+                echo "::set-output name=version::$version"
+        shell: PowerShell
         
+    - name: Increment Version
+        id: increment_version
+        run: |
+                # Increment the version
+                $current_version = $env:INPUT_VERSION
+                # $version_parts = $current_version -split '\.'
+                # $incremented_version = "{0}.{1}.{2}" -f $version_parts[0], $version_parts[1], ($version_parts[2] + 1)
+                $incremented_version = $current_version -split'\.'
+                $incremented_version[-1] = [int]$incremented_version[-1]+1
+                $incremented_version = $incremented_version -join'.'
+                Write-Output "Incremented Version: $incremented_version"
+                echo "::set-output name=incremented_version::$incremented_version"            
     - name: Build with Maven
-      run: mvn clean install --file ${{ github.workspace }}//coit-backend1
+      run: mvn install --file ${{ github.workspace }}//coit-backend1
+    
+    - name: Update Version in version.txt
+        # if: ${{ success() }}
+        run: |
+               git config user.email "actions@github.com"
+               git config user.name "GitHub Actions"
+               git stash push -m "Stashing changes in Folder1" Folder1/
+               git checkout develop
+               git pull origin develop
+               git reset HEAD .
+               git restore --source=HEAD --staged -- .
+               git restore --source=HEAD -- .
+               git checkout HEAD -- Release_versions/Folder1_version.yml
+               $incremented_version = $env:INPUT_VERSION
+               (Get-Content "${{ github.workspace }}\Release_versions\Folder1_version.yml") -replace 'version:\s*\d+\.\d+\.\d+', "$incremented_version" | Set-Content "${{ github.workspace }}\Release_versions\Folder1_version.yml"
+               git add "${{ github.workspace }}\Release_versions\Folder1_version.yml"
+               git commit -m "Increment version to $incremented_version"
+               git push origin develop
    
       
 
