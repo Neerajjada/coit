@@ -9,7 +9,6 @@ on:
      - 'develop'
     paths:
      - 'coit-backend1'
-  workflow_dispatch:
 
 jobs:
   build:
@@ -28,6 +27,6 @@ jobs:
         
 
     - name: Build with Maven
-      run: mvn install
+      run: mvn install -s $GITHUB_WORKSPACE/coit-backend1/pom.xml
 
 
