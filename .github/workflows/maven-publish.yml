@@ -24,10 +24,10 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
-    - name: Setup Maven Action
-      uses: s4u/setup-maven-action@< version >
-      
-    - run: mvn -V ...
+   - name: Set up Maven
+      run: sudo | wget -q https://apache.mirrors.benatherton.com/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz
+        tar -xzf apache-maven-3.8.4-bin.tar.gz
+        export PATH=$PATH:/path/to/apache-maven-3.8.4/bin
 
     - name: Build with Maven
       run: mvn clean install --file ${{ github.workspace }}//coit-backend1
