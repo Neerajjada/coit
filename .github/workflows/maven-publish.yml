@@ -25,6 +25,7 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
+        server-id: ${{ github.workspace }}//coit-backend1
         
 
     - name: Build with Maven
