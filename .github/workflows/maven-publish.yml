@@ -23,6 +23,7 @@ jobs:
       uses: actions/setup-java@v2
       with:
         java-version: '11'
+        distribution: 'temurin'
     - name: Set up Maven
       run: |
         wget -q https://apache.mirrors.benatherton.com/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz
