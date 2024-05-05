@@ -48,13 +48,13 @@ jobs:
         run: >
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
-          git stash push -m "Stashing changes in {{ github.workspace }}/coit-backend1/version" version/
+          git stash push -m "Stashing changes in coit-backend1/version" version/
           git checkout develop
           git pull origin develop
           git reset HEAD .
           git restore --source=HEAD --staged -- .
           git restore --source=HEAD -- .
-          git checkout HEAD -- {{ github.workspace }}/coit-backend1/version/version.txt
+          git checkout HEAD -- /coit-backend1/version/version.txt
           $incremented_version = $INPUT_VERSION
           (Get-Content "${{ github.workspace }}\coit-backend1\version\version.txt") -replace 'version:\s*\d+\.\d+\.\d+', "$incremented_version" | Set-Content "${{ github.workspace }}\coit-backend1\version\version.txt"
           git add "${{ github.workspace }}\coit-backend1\version\version.txt"
