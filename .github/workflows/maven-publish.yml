@@ -22,7 +22,7 @@ jobs:
       - name: Read current version
         id: get_version
         run: |
-          current_version=$(cat ${{ github.workspace }}\coit-backend1\version\version.txt)
+          current_version=$(cat /coit-backend1/version/version.txt)
           echo "::set-output name=version::$current_version"
           Write-Output "Version_current: $version"
           echo "::set-output name=version::$version"
@@ -40,7 +40,7 @@ jobs:
         if: ${{ success() }}
         run: |
          new_version=${{ steps.increment-version.outputs.new-version }}
-         sed -i "s/$current_version/$new_version/" ${{ github.workspace }}\coit-backend1\version\version.txt
+         sed -i "s/$current_version/$new_version/" /coit-backend1/version/version.txt
       - name: Commit version increment
         run: |
          git config --global user.email "actions@github.com"
