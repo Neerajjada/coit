@@ -8,8 +8,7 @@ on:
   
 jobs:
   build:
-    runs-on: windows-latest
-    if: github.event.pusher.name != 'GithubActions'
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
