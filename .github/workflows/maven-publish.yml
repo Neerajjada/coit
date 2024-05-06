@@ -40,7 +40,7 @@ jobs:
          sed -i "s/${escaped_version}/${escaped_new_version}/" ${{ github.workspace }}/coit-backend1/version/version.txt
          
       - name: Build with Maven
-        run: mvn install --file ${{ github.workspace }}//coit-backend1
+        run: mvn clean install --file ${{ github.workspace }}//coit-backend1
         
       - name: Commit version increment
         if: ${{ success() }}
