@@ -19,50 +19,34 @@ jobs:
         with:
           java-version: "11"
           distribution: temurin
-      - name: Determine version
-        id: read_version
-        run: >
-          $version = Get-Content "${{ github.workspace }}\version\version.txt" |
-          Select-String -Pattern "version:" | ForEach-Object { $_ -replace
-          'version:/s*', '' }
-
+      - name: Read current version
+        id: get_version
+        run: |
+          current_version=${{ github.workspace }}\coit-backend1\version\version.txt
+          echo "::set-output name=version::$current_version"
           Write-Output "Version_current: $version"
-
           echo "::set-output name=version::$version"
-        shell: PowerShell
       - name: Increment Version
-        id: increment_version
-        run: >
-          # Increment the version
-          $current_version = $env:INPUT_VERSION
-          # $version_parts = $current_version -split '\.'
-          # $incremented_version = "{0}.{1}.{2}" -f $version_parts[0], $version_parts[1], ($version_parts[2] + 1)
-          $incremented_version = $current_version -split'\.'
-          $incremented_version[-1] = [int]$incremented_version[-1]+1
-          $incremented_version = $incremented_version -join'.'
-          Write-Output "Incremented Version: $incremented_version"
-          echo "::set-output name=incremented_version::$incremented_version" 
-        env:
-          INPUT_VERSION: ${{ steps.read_version.outputs.version }}
-        shell: PowerShell
+        id: increment-version
+        run: |
+         current_version=${{ steps.get-version.outputs.version }}
+         IFS='.' read -r major minor patch <<< "$current_version"
+         new_version="$major.$minor.$((patch + 1))"
+         echo "::set-output name=new-version::$new_version"
       - name: Build with Maven
         run: mvn install --file ${{ github.workspace }}//coit-backend1
+        
       - name: Update Version in version.txt
         if: ${{ success() }}
-        run: >
-          git config  user.email "actions@github.com"
-          git config  user.name "GitHubActions"
-          git stash push -m "Stashing changes in coit-backend1/version" version/
-          git checkout develop
-          git pull origin develop
-          git reset HEAD .
-          git restore --source=HEAD --staged -- .
-          git restore --source=HEAD -- .
-          git checkout HEAD -- /coit-backend1/version/version.txt
-          $incremented_version = $env:INPUT_VERSION
-          (Get-Content "${{ github.workspace }}\coit-backend1\version\version.txt") -replace 'version:\s*\d+\.\d+\.\d+', "$incremented_version" | Set-Content "${{ github.workspace }}\coit-backend1\version\version.txt"
-          git add "{{ github.workspace }}$\coit-backend1\version\version.txt"
-          git commit -m "Increment version to $incremented_version"
-          git push origin develop
-        env:
-          INPUT_VERSION: ${{ steps.increment_version.outputs.incremented_version }}
+        run: |
+         new_version=${{ steps.increment-version.outputs.new-version }}
+         sed -i "s/$current_version/$new_version/" ${{ github.workspace }}\coit-backend1\version\version.txt
+      - name: Commit version increment
+        run: |
+         git config --global user.email "actions@github.com"
+         git config --global user.name "GitHub Actions"
+         git ${{ github.workspace }}\coit-backend1\version\version.txt
+         git commit -m "Increment version to $new_version"
+      
+      - name: Push changes
+        uses: ad-m/github-push-action@master
