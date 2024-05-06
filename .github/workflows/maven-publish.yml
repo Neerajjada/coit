@@ -39,7 +39,9 @@ jobs:
         if: ${{ success() }}
         run: |
          new_version=${{ steps.increment-version.outputs.new-version }}
-         sed -i "s/${{ steps.get_version.outputs.version }}/$new_version/" ${{ github.workspace }}/coit-backend1/version/version.txt
+         escaped_version=$(echo "${{ steps.get_version.outputs.version }}" | sed 's/[\/&]/\\&/g')
+         escaped_new_version=$(echo "$new_version" | sed 's/[\/&]/\\&/g')
+         sed -i "s/${escaped_version}/${escaped_new_version}/" ${{ github.workspace }}/coit-backend1/version/version.txt
       - name: Commit version increment
         run: |
          git config --global user.email "actions@github.com"
