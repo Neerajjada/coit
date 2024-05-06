@@ -22,7 +22,7 @@ jobs:
       - name: Read current version
         id: get_version
         run: |
-          current_version=$(cat /coit-backend1/version/version.txt)
+          current_version=$(cat {{ github.workspace }}/coit-backend1/version/version.txt)
           echo "::set-output name=version::$current_version"
           Write-Output "Version_current: $version"
           echo "::set-output name=version::$version"
