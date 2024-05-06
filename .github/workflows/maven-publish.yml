@@ -51,7 +51,7 @@ jobs:
          git commit -a -m "Increment version to ${{ steps.increment-version.outputs.new-version }}"
       
       - name: Push changes
-        uses: ad-m/github-push-action@develop
+        uses: ad-m/github-push-action@master
         with:
          github_token: ${{ secrets.GITHUB_TOKEN }}
          branch: develop
