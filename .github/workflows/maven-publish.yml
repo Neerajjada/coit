@@ -27,7 +27,7 @@ jobs:
       - name: Increment Version
         id: increment-version
         run: |
-          current_version=${{ steps.get_version.outputs.version }}
+          current_version=${{ steps.get-version.outputs.version }}
           IFS='.' read -r major minor patch <<< "$current_version"
           new_version="$major.$minor.$((patch + 1))"
           echo "::set-output name=new-version::$new_version"
