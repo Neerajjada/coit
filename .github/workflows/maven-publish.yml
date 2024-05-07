@@ -1,8 +1,12 @@
 name: Maven Package
 
 on:
+  workflow_dispatch: null
   push:
-    branches:
+   permissions:
+      actions: write
+      contents: write
+  branches:
       - develop
   
 jobs:
@@ -19,7 +23,7 @@ jobs:
           java-version: "11"
           distribution: temurin
       - name: Read current version
-        id: get-version
+        id: get_version
         run: |
           current_version=$(cat "${{ github.workspace }}/coit-backend1/version/version.txt")
           echo "::set-output name=version::$current_version"
@@ -35,7 +39,7 @@ jobs:
       - name: Update Version in version.txt
         run: |
           new_version=${{ steps.increment-version.outputs.new-version }}
-          escaped_version=$(echo "${{ steps.get-version.outputs.version }}" | sed 's/[\/&]/\\&/g')
+          escaped_version=$(echo "${{ steps.get_version.outputs.version }}" | sed 's/[\/&]/\\&/g')
           escaped_new_version=$(echo "$new_version" | sed 's/[\/&]/\\&/g')
           sed -i "s/${escaped_version}/${escaped_new_version}/" "${{ github.workspace }}/coit-backend1/version/version.txt"
          
@@ -44,6 +48,8 @@ jobs:
 
       - name: Commit version increment
         if: ${{ success() }}
+        env:
+          PAT: ${{ secrets.PAT_FOR_ACTIONS }}
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
