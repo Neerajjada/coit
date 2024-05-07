@@ -1,11 +1,7 @@
 name: Maven Package
 
 on:
-  workflow_dispatch: null
   push:
-    permissions:
-      actions: write
-      contents: write
     branches:
       - develop
   
@@ -23,7 +19,7 @@ jobs:
           java-version: "11"
           distribution: temurin
       - name: Read current version
-        id: get_version
+        id: get-version
         run: |
           current_version=$(cat "${{ github.workspace }}/coit-backend1/version/version.txt")
           echo "::set-output name=version::$current_version"
@@ -35,18 +31,17 @@ jobs:
           IFS='.' read -r major minor patch <<< "$current_version"
           new_version="$major.$minor.$((patch + 1))"
           echo "::set-output name=new-version::$new_version"
+
       - name: Update Version in version.txt
         run: |
           new_version=${{ steps.increment-version.outputs.new-version }}
-          escaped_version=$(echo "${{ steps.get_version.outputs.version }}" | sed 's/[\/&]/\\&/g')
+          escaped_version=$(echo "${{ steps.get-version.outputs.version }}" | sed 's/[\/&]/\\&/g')
           escaped_new_version=$(echo "$new_version" | sed 's/[\/&]/\\&/g')
           sed -i "s/${escaped_version}/${escaped_new_version}/" "${{ github.workspace }}/coit-backend1/version/version.txt"
          
       - name: Build with Maven
         run: mvn clean install --file "${{ github.workspace }}/coit-backend1"
-      - name: Use PAT in workflow
-        run: echo ${{ secrets.TOKEN }}
-  
+
       - name: Commit version increment
         if: ${{ success() }}
         run: |
@@ -54,6 +49,7 @@ jobs:
           git config --global user.name "GitHub Actions"
           git add "${{ github.workspace }}/coit-backend1/version/version.txt"
           git commit -m "Increment version to ${{ steps.increment-version.outputs.new-version }}" 
+      
       - name: Push changes to develop branch
         uses: ad-m/github-push-action@master
         with:
