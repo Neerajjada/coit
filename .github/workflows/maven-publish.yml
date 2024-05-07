@@ -45,7 +45,7 @@ jobs:
       - name: Build with Maven
         run: mvn clean install --file "${{ github.workspace }}/coit-backend1"
       - name: Use PAT in workflow
-        run: echo ${{ secrets.MY_PAT_TOKEN }}
+        run: echo ${{ secrets.TOKEN }}
   
       - name: Commit version increment
         if: ${{ success() }}
