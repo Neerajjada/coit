@@ -3,6 +3,9 @@ name: Maven Package
 on:
   workflow_dispatch: null
   push:
+    permissions:
+      actions: write
+      contents: write
     branches:
       - develop
   
