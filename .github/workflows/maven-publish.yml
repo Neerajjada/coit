@@ -1,7 +1,7 @@
 name: Maven Package
 
 on:
-  workflow_dispatch: null
+  workflow_dispatch:
   push:
    permissions:
       actions: write
