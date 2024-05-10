@@ -1,13 +1,14 @@
 name: Maven Package
 
 on:
-  workflow_dispatch:
   push:
    permissions:
       actions: write
       contents: write
   branches:
       - develop
+      
+  workflow_dispatch:
   
 jobs:
   build:
