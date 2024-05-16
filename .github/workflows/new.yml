@@ -33,7 +33,7 @@ jobs:
       - name: Read Version
         id: read_version
         run: |
-                $version = Get-Content "${{ github.workspace }}/coit-backend1/version/version.txt" | Select-String -Pattern "version:" | ForEach-Object { $_ -replace 'version:\s*', '' }
+                $version = Get-Content "${{ github.workspace }}\coit-backend1\version\version.txt" | Select-String -Pattern "version:" | ForEach-Object { $_ -replace 'version:\s*', '' }
                 Write-Output "Version_current: $version"
                 echo "::set-output name=version::$version"
         shell: PowerShell
@@ -65,7 +65,7 @@ jobs:
         shell: PowerShell
         
       - name: Build with Maven
-        run: mvn clean install --file "${{ github.workspace }}/coit-backend1" 
+        run: mvn clean install --file "${{ github.workspace }}\coit-backend1" 
         # continue-on-error: true
 
       - name: Update Version in Folder1_version.yml
@@ -73,7 +73,7 @@ jobs:
         run: |
                git config user.email "actions@github.com"
                git config user.name "GitHub Actions"
-               git stash push -m "Stashing changes in coit-backend1" coit-backend1/
+               git stash push -m "Stashing changes in coit-backend1" coit-backend1\
                git checkout develop
                git pull origin develop
                git reset HEAD .
@@ -81,8 +81,8 @@ jobs:
                git restore --source=HEAD -- .
                git checkout HEAD -- /coit-backend1/version/version.txt
                $incremented_version = $env:INPUT_VERSION
-               (Get-Content "${{ github.workspace }}/coit-backend1/version/version.txt") -replace 'version:\s*\d+\.\d+\.\d+', "$incremented_version" | Set-Content "${{ github.workspace }}/coit-backend1/version/version.txt"
-               git add "${{ github.workspace }}/coit-backend1/version/version.txt"
+               (Get-Content "${{ github.workspace }}\coit-backend1\version\version.txt") -replace 'version:\s*\d+\.\d+\.\d+', "$incremented_version" | Set-Content "${{ github.workspace }}\coit-backend1\version\version.txt"
+               git add "${{ github.workspace }}/coit-backend1\version\version.txt"
                git commit -m "Increment version to $incremented_version"
                git push origin develop
         env:
