@@ -1,11 +1,6 @@
 name: New-Windows Hosted
 
 on:
-  push:
-   branches:
-      - develop
-   paths:
-      - 'coit-backend1/**'
   workflow_dispatch:
   
 jobs:
