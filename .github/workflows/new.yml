@@ -1,0 +1,91 @@
+name: New-Windows Hosted
+
+on:
+  push:
+   branches:
+      - develop
+   paths:
+      - 'coit-backend1/**'
+  workflow_dispatch:
+  
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+      packages: write
+      actions: write
+      attestations: write	
+      checks: write	
+      deployments: write
+      id-token: read
+      issues: write
+      pull-requests: write
+      repository-projects: write
+      security-events: write
+      statuses: write
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: "11"
+          distribution: temurin
+      - name: Read Version
+        id: read_version
+        run: |
+                $version = Get-Content "${{ github.workspace }}/coit-backend1/version/version.txt" | Select-String -Pattern "version:" | ForEach-Object { $_ -replace 'version:\s*', '' }
+                Write-Output "Version_current: $version"
+                echo "::set-output name=version::$version"
+        shell: PowerShell
+        
+      - name: Increment Version
+        id: increment_version
+        run: |
+                # Increment the version
+                $current_version = $env:INPUT_VERSION
+                # $version_parts = $current_version -split '\.'
+                # $incremented_version = "{0}.{1}.{2}" -f $version_parts[0], $version_parts[1], ($version_parts[2] + 1)
+                $incremented_version = $current_version -split'\.'
+                $incremented_version[-1] = [int]$incremented_version[-1]+1
+                $incremented_version = $incremented_version -join'.'
+                Write-Output "Incremented Version: $incremented_version"
+                echo "::set-output name=incremented_version::$incremented_version"
+        env:
+          INPUT_VERSION: ${{ steps.read_version.outputs.version }}
+        shell: PowerShell
+        
+      - name: Build Package
+        run: |
+                 $incremented_version = $env:INPUT_VERSION
+                 $build_version = $incremented_version -split'\:'
+                 $build_version = $build_version[-1]
+                 Write-Output "Build Version: $build_version"
+        env:
+          INPUT_VERSION: ${{ steps.increment_version.outputs.incremented_version }}
+        shell: PowerShell
+        
+      - name: Build with Maven
+        run: mvn clean install --file "${{ github.workspace }}/coit-backend1" 
+        # continue-on-error: true
+
+      - name: Update Version in Folder1_version.yml
+        # if: ${{ success() }}
+        run: |
+               git config user.email "actions@github.com"
+               git config user.name "GitHub Actions"
+               git stash push -m "Stashing changes in coit-backend1" coit-backend1/
+               git checkout develop
+               git pull origin develop
+               git reset HEAD .
+               git restore --source=HEAD --staged -- .
+               git restore --source=HEAD -- .
+               git checkout HEAD -- /coit-backend1/version/version.txt
+               $incremented_version = $env:INPUT_VERSION
+               (Get-Content "${{ github.workspace }}/coit-backend1/version/version.txt") -replace 'version:\s*\d+\.\d+\.\d+', "$incremented_version" | Set-Content "${{ github.workspace }}/coit-backend1/version/version.txt"
+               git add "${{ github.workspace }}/coit-backend1/version/version.txt"
+               git commit -m "Increment version to $incremented_version"
+               git push origin develop
+        env:
+          INPUT_VERSION: ${{ steps.increment_version.outputs.incremented_version }}
+                
