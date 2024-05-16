@@ -18,7 +18,6 @@ jobs:
       attestations: write	
       checks: write	
       deployments: write
-      id-token: read
       issues: write
       pull-requests: write
       repository-projects: write
