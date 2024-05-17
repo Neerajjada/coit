@@ -67,10 +67,14 @@ jobs:
           git config user.name "GitHub Actions"
           
       - name: Disable branch protection
+        shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          curl -X DELETE -H "Authorization: token $GH_TOKEN" \ https://github.com/Neerajjada/coit.git/${{ github.repository }}/branches/develop/protection
+          $headers = @{
+            Authorization = "token $env:GH_TOKEN"
+          }
+          Invoke-RestMethod -Uri "https://api.github.com/repos/${{ github.repository }}/branches/develop/protection" -Method Delete -Headers $headers
 
       - name: Update Version in Folder1_version.yml
         # if: ${{ success() }}
@@ -91,21 +95,26 @@ jobs:
           INPUT_VERSION: ${{ steps.increment_version.outputs.incremented_version }}
           
       - name: Re-enable branch protection
+        shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          curl -X PUT -H "Authorization: token $GH_TOKEN" -H "Accept: application/vnd.github.luke-cage-preview+json" \
-          -d '{
-                "required_status_checks": {
-                  "strict": true,
-                  "contexts": []
-                },
-                "enforce_admins": true,
-                "required_pull_request_reviews": {
-                  "dismiss_stale_reviews": true,
-                  "require_code_owner_reviews": true,
-                  "required_approving_review_count": 1
-                },
-                "restrictions": null
-              }' \ https://github.com/Neerajjada/coit.git/${{ github.repository }}/branches/develop/protection
+          $headers = @{
+            Authorization = "token $env:GH_TOKEN"
+            Accept        = "application/vnd.github.luke-cage-preview+json"
+          }
+          $body = @{
+            required_status_checks = @{
+              strict   = $true
+              contexts = @()
+            }
+            enforce_admins = $true
+            required_pull_request_reviews = @{
+              dismiss_stale_reviews          = $true
+              require_code_owner_reviews     = $true
+              required_approving_review_count = 1
+            }
+            restrictions = $null
+          } | ConvertTo-Json
+          Invoke-RestMethod -Uri "https://api.github.com/repos/${{ github.repository }}/branches/develop/protection" -Method Put -Headers $headers -Body $body
                 
