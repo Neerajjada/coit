@@ -70,8 +70,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          curl -X DELETE -H "Authorization: token $GH_TOKEN" \
-          ${{ github.repository }}/branches/develop/protection
+          curl -X DELETE -H "Authorization: token $GH_TOKEN" \ https://api.github.com/repos/${{ github.repository }}/branches/develop/protection
 
       - name: Update Version in Folder1_version.yml
         # if: ${{ success() }}
