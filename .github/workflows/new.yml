@@ -102,6 +102,7 @@ jobs:
           $headers = @{
             Authorization = "token $env:GH_TOKEN"
             Accept        = "application/vnd.github.luke-cage-preview+json"
+            "Content-Type" = "application/json"
           }
           $body = @{
             required_status_checks = @{
