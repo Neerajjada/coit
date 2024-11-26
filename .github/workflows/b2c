@@ -1,0 +1,38 @@
+name: 'deploy-b2c-changes'
+
+on:
+  workflow_dispatch: # Allows triggering manually with input parameters
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'dev'
+        options:
+          - dev
+          - test
+          - prod
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to ${{ github.event.inputs.environment }} Environment
+    steps:
+      - uses: actions/checkout@v3
+
+      # Setup tool
+      - uses: judedaryl/ieftool-action/setup@v1
+
+      # Build step
+      - uses: judedaryl/ieftool-action/build@v1
+        with:
+          source: src
+          output: build
+          config: ieftool.${{ github.event.inputs.environment }}.config # Example of env-specific config file
+
+      # Deploy step with environment-specific secrets
+      - uses: judedaryl/ieftool-action/deploy@v1
+        with:
+          folder: build
+          client-id: ${{ secrets['B2C_CLIENT_ID_' + github.event.inputs.environment | upper] }}
+          client-secret: ${{ secrets['B2C_CLIENT_SECRET_' + github.event.inputs.environment | upper] }}
+          tenant-id: ${{ secrets['B2C_TENANT_ID_' + github.event.inputs.environment | upper] }}
