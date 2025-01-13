@@ -77,11 +77,13 @@ jobs:
           
           Set-Content -Path $file_path -Value $updatedContent
           
+          echo "Git status"
           git status
+          echo "Git add"
           git add "$file_path"
-          
+          echo "Git commit"
           git commit -m "Update version for $config to $incremented_version"
+          echo "Git push"
           git push origin develop
-        
         env:
           INPUT_VERSION: ${{ steps.increment_version.outputs.incremented_version }}
