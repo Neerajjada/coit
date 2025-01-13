@@ -72,6 +72,7 @@ jobs:
           Write-Output "Original File Content: $fileContent"
           
           $updatedContent = $fileContent -replace "$($config):\s*""(.+?)""", "$($config): `"$incremented_version`""
+          
           Write-Output "Updated File Content: $updatedContent"
           
           Set-Content -Path $file_path -Value $updatedContent
