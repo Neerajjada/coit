@@ -26,16 +26,10 @@ jobs:
           $config = "DE"
 
           $fileContent = Get-Content "${{ github.workspace }}\versions.yml" | Out-String
-
           Write-Output "File Content: $fileContent"  # Debugging line
-
           $regex = [regex]"$($config):\s*""(.+?)"""
-
           Write-Output "Regex: $regex"  # Debugging line
-
-
           if ($fileContent -match $regex) {
-
           $version = $matches[1]
            Write-Output "Version_current: $version"
            echo "::set-output name=version::$version"
@@ -54,8 +48,9 @@ jobs:
           INPUT_VERSION: ${{ steps.read_version.outputs.version }}
         shell: PowerShell
       - name: Update Version in release-version in versions-de.yml
-        run: |
-             # Define the config and read the content of the versions.yml file
+        run: >
+          # Define the config and read the content of the versions.yml file
+
           $config = "DE"
           $fileContent = Get-Content "${{ github.workspace }}\versions.yml" | Out-String  # Join lines into one string
           Write-Output "File Content: $fileContent"  # Debugging line
@@ -68,6 +63,7 @@ jobs:
           Write-Output "Version_current: $version"
           echo "::set-output name=version::$version"
           } 
+
           # Increment the version
           $incremented_version = $version -split '\.' 
           $incremented_version[-1] = [int]$incremented_version[-1] + 1
@@ -82,4 +78,4 @@ jobs:
           git push origin develop
         shell: PowerShell
         env:
-         JAVA_HOME: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\11.0.25-9\x64
+          JAVA_HOME: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\11.0.25-9\x64
