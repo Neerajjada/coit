@@ -24,7 +24,7 @@ jobs:
         id: read_version
         run: |
           $config = "DE"
-          $fileContent = Get-Content "D:\a\coit\coit\versions.yml"
+          $fileContent = Get-Content "${{ github.workspace }}\versions.yml" | Out-String
           Write-Output "File Content: $fileContent"  # Debugging line
           $regex = [regex]"$($config):\s*""(.+?)"""
           Write-Output "Regex: $regex"  # Debugging line
