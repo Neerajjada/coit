@@ -23,7 +23,7 @@ jobs:
       - name: Read Version
         id: read_version
         run: >
-          $config = "DE"
+          $config = "DS"
 
           $fileContent = Get-Content "${{ github.workspace }}\versions.yml" | Out-String
 
@@ -72,7 +72,7 @@ jobs:
           git checkout HEAD -- ${{ github.workspace }}/versions.yml
 
 
-          $config = "DE"
+          $config = "DS"
 
 
           $incremented_version = $env:INPUT_VERSION
