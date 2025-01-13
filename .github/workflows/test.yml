@@ -79,6 +79,7 @@ jobs:
           
           git status
           git add $file_path
+          
           git commit -m "Update version for $config to $incremented_version"
           git push origin develop
         shell: PowerShell
