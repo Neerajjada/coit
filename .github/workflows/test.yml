@@ -51,6 +51,11 @@ jobs:
         env:
           INPUT_VERSION: ${{ steps.read_version.outputs.version }}
         shell: PowerShell
+        
+      - name: Set up Git
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"  
       - name: Update Version in release-version in versions-de.yml
         run: >
           # Define the config and read the content of the versions.yml file
