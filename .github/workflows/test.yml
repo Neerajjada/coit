@@ -22,14 +22,20 @@ jobs:
           distribution: temurin
       - name: Read Version
         id: read_version
-        run: |
+        run: >
           $config = "DE"
+
           $fileContent = Get-Content "${{ github.workspace }}\versions.yml" | Out-String
+
           Write-Output "File Content: $fileContent"  # Debugging line
+
           $regex = [regex]"$($config):\s*""(.+?)"""
+
           Write-Output "Regex: $regex"  # Debugging line
 
+
           if ($fileContent -match $regex) {
+
           $version = $matches[1]
            Write-Output "Version_current: $version"
            echo "::set-output name=version::$version"
@@ -48,7 +54,7 @@ jobs:
           INPUT_VERSION: ${{ steps.read_version.outputs.version }}
         shell: PowerShell
       - name: Update Version in release-version in versions-de.yml
-        run: |
+        run: >
           git stash push -m "Stashing changes in $config"
           git checkout develop
           git pull origin develop
@@ -56,16 +62,14 @@ jobs:
           git restore --source=HEAD --staged -- .
           git restore --source=HEAD -- .
           git checkout HEAD -- versions.yml
-
-         $config = "DE"
-         $incremented_version = "${{ steps.increment_version.outputs.incremented_version }}"
-         $versions = Get-Content "${{ github.workspace }}\versions.yml" | ConvertFrom-Yaml
-         $versions.versions.$config = $incremented_version
-         $versions | ConvertTo-Yaml | Set-Content "${{ github.workspace }}\versions.yml"
-    
-         git add "${{ github.workspace }}\versions.yml"
-         git commit -m "Increment version for $config to $incremented_version"
-         git push origin develop
+          $config = "DE"
+          $incremented_version = "${{ steps.increment_version.outputs.incremented_version }}"
+          $versions = Get-Content "${{ github.workspace }}\versions.yml" | ConvertFrom-Yaml
+          $versions.versions.$config = $incremented_version
+          $versions | ConvertTo-Yaml | Set-Content "${{ github.workspace }}\versions.yml"
+          git add "${{ github.workspace }}\versions.yml"
+          git commit -m "Increment version for $config to $incremented_version"
+          git push origin develop
         env:
-         INPUT_VERSION: ${{ steps.increment_version.outputs.incremented_version }}
+          INPUT_VERSION: ${{ steps.increment_version.outputs.incremented_version }}
         shell: PowerShell
