@@ -68,16 +68,18 @@ jobs:
           $file_path = "${{ github.workspace }}\versions.yml"
           
           $fileContent = Get-Content $file_path | Out-String
+
+          Write-Output "Original File Content: $fileContent"
           
           $updatedContent = $fileContent -replace "$($config):\s*""(.+?)""", "$($config): `"$incremented_version`""
+          Write-Output "Updated File Content: $updatedContent"
           
           Set-Content -Path $file_path -Value $updatedContent
           
-          # Git operations to commit the change
-          git add "${{ github.workspace }}\versions.yml"
+          git status
+          git add $file_path
           git commit -m "Update version for $config to $incremented_version"
           git push origin develop
         shell: PowerShell
         env:
-          JAVA_HOME: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\11.0.25-9\x64
           INPUT_VERSION: ${{ steps.increment_version.outputs.incremented_version }}
