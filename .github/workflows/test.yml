@@ -24,15 +24,21 @@ jobs:
         id: read_version
         run: >
           $config = "DE"
+          
           $fileContent = Get-Content "${{ github.workspace }}\versions.yml" | Out-String
+          
           Write-Output "File Content: $fileContent"  # Debugging line
+          
           $regex = [regex]"$($config):\s*""(.+?)"""
+          
           Write-Output "Regex: $regex"  # Debugging line
+          
           if ($fileContent -match $regex) {
+          
           $version = $matches[1]
            Write-Output "Version_current: $version"
            echo "::set-output name=version::$version"
-           
+          } 
       - name: Increment Version
         id: increment_version
         run: |
