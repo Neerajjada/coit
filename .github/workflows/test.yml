@@ -78,7 +78,7 @@ jobs:
           Set-Content -Path $file_path -Value $updatedContent
           
           git status
-          git add $file_path
+          git add "$file_path"
           
           git commit -m "Update version for $config to $incremented_version"
           git push origin develop
