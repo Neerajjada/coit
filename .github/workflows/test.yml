@@ -52,8 +52,43 @@ jobs:
           INPUT_VERSION: ${{ steps.read_version.outputs.version }}
         shell: PowerShell
         
+      - name: Set up Git
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions" 
+          
+      - name: Update Version in Folder1_version.yml
+        # if: ${{ success() }}
+        run: |
+               git stash push -m "Stashing changes ${{ github.workspace }}"
+               git checkout develop
+               git pull origin develop
+               git reset HEAD .
+               git restore --source=HEAD --staged -- .
+               git restore --source=HEAD -- .
+               git checkout HEAD -- ${{ github.workspace }}/versions.yml
                
-      - name: Update Version in release-version in versions-de.yml
+               $config = "DE"
+               
+               $incremented_version = $env:INPUT_VERSION
+
+               $file_path = "${{ github.workspace }}\versions.yml"
+          
+               $fileContent = Get-Content $file_path | Out-String
+
+               Write-Output "Original File Content: $fileContent"
+          
+               $updatedContent = $fileContent -replace "$($config):\s*""(.+?)""", "$($config): `"$incremented_version`""
+          
+               Write-Output "Updated File Content: $updatedContent"
+          
+               Set-Content -Path $file_path -Value $updatedContent
+               
+               git add "${{ github.workspace }}/versions.yml"
+               git commit -m "Increment version to $incremented_version"
+               git push origin develop
+        env:
+          INPUT_VERSION: ${{ steps.increment_version.outputs.incremented_version }}- name: Update Version in release-version in versions-de.yml
         run: >
           # Define the config and read the content of the versions.yml file
 
@@ -73,10 +108,7 @@ jobs:
           
           Set-Content -Path $file_path -Value $updatedContent
 
-      - name: Set up Git
-        run: |
-          git config user.email "actions@github.com"
-          git config user.name "GitHub Actions"     
+           
           
           git status
           git add "$file_path"
