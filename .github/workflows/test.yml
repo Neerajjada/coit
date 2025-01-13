@@ -56,13 +56,19 @@ jobs:
           # Define the config and read the content of the versions.yml file
 
           $config = "DE"
+          
           $fileContent = Get-Content "${{ github.workspace }}\versions.yml" | Out-String  # Join lines into one string
+          
           Write-Output "File Content: $fileContent"  # Debugging line
           # Regex to match version for the selected config (e.g., DE)
+          
           $regex = [regex]"$($config):\s*""(.+?)"""  # Corrected regex pattern
+          
           Write-Output "Regex: $regex"  # Debugging line  
           # Perform the regex match
+          
           if ($fileContent -match $regex) {
+          
           $version = $matches[1]
           Write-Output "Version_current: $version"
           echo "::set-output name=version::$version"
