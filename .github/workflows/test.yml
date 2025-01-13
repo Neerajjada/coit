@@ -25,7 +25,7 @@ jobs:
         run: |
           $config = "DE"
           $fileContent = Get-Content "${{ github.workspace }}\versions.yml"
-          $regex = [regex]"$($config):\s*(.+)"
+          $regex = [regex]"$($config):\s*""(.+?)"""
           if ($fileContent -match $regex) {
              $version = $matches[1]
              Write-Output "Version_current: $version"
