@@ -56,50 +56,14 @@ jobs:
         run: |
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"  
+          
       - name: Update Version in release-version in versions-de.yml
         run: >
           # Define the config and read the content of the versions.yml file
 
           $config = "DE"
 
-
-          # Read the content of the versions.yml file into a single string
-
-          $fileContent = Get-Content "${{ github.workspace }}\versions.yml" | Out-String
-
-
-          Write-Output "File Content: $fileContent"  # Debugging line
-
-
-          # Regex to match version for the selected config (e.g., DE)
-
-          $regex = [regex]"$($config):\s*""(.+?)"""  # Corrected regex pattern
-
-
-          Write-Output "Regex: $regex"  # Debugging line  
-
-
-          # Perform the regex match
-
-          if ($fileContent -match $regex) {
-
-          $version = $matches[1]
-
-          Write-Output "Version_current: $version"
-
-          echo "::set-output name=version::$version"
-
-          }
-
-
-          # Use the already incremented version passed from the previous step
-
           $incremented_version = $env:INPUT_VERSION
-
-          Write-Output "Using Incremented Version: $incremented_version"  
-
-
-          # Replace the version in the file for the specified config (DE)
 
           $fileContent = $fileContent -replace "$($config):\s*""$version""", "$($config): `"$incremented_version`""
 
