@@ -62,11 +62,13 @@ jobs:
           # Define the config and read the content of the versions.yml file
 
           $config = "DE"
+          
           $incremented_version = $env:INPUT_VERSION
+          
           $fileContent = (Get-Content "${{ github.workspace }}\versions.yml" | Out-String) -replace "$($config):\s*""(.+?)""", "$($config): `"$incremented_version`""
+          
           Set-Content "${{ github.workspace }}\versions.yml" -Value $fileContent
-
-
+          
           # Git operations to commit the change
           git add "${{ github.workspace }}\versions.yml"
           git commit -m "Update version for $config to $incremented_version"
