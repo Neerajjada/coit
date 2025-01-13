@@ -28,6 +28,7 @@ jobs:
           Write-Output "File Content: $fileContent"  # Debugging line
           $regex = [regex]"$($config):\s*""(.+?)"""
           Write-Output "Regex: $regex"  # Debugging line
+          
           if ($fileContent -match $regex) {
           $version = $matches[1]
            Write-Output "Version_current: $version"
