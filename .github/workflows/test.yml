@@ -32,8 +32,7 @@ jobs:
           $version = $matches[1]
            Write-Output "Version_current: $version"
            echo "::set-output name=version::$version"
-          }
-        shell: PowerShell
+           
       - name: Increment Version
         id: increment_version
         run: |
