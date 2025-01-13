@@ -24,17 +24,17 @@ jobs:
         id: read_version
         run: >
           $config = "DE"
-          
+
           $fileContent = Get-Content "${{ github.workspace }}\versions.yml" | Out-String
-          
+
           Write-Output "File Content: $fileContent"  # Debugging line
-          
+
           $regex = [regex]"$($config):\s*""(.+?)"""
-          
+
           Write-Output "Regex: $regex"  # Debugging line
-          
+
           if ($fileContent -match $regex) {
-          
+
           $version = $matches[1]
            Write-Output "Version_current: $version"
            echo "::set-output name=version::$version"
@@ -56,37 +56,59 @@ jobs:
           # Define the config and read the content of the versions.yml file
 
           $config = "DE"
-          
-          $fileContent = Get-Content "${{ github.workspace }}\versions.yml" | Out-String  # Join lines into one string
-          
-          Write-Output "File Content: $fileContent"  # Debugging line
-          # Regex to match version for the selected config (e.g., DE)
-          
-          $regex = [regex]"$($config):\s*""(.+?)"""  # Corrected regex pattern
-          
-          Write-Output "Regex: $regex"  # Debugging line  
-          # Perform the regex match
-          
-          if ($fileContent -match $regex) {
-          
-          $version = $matches[1]
-          
-          Write-Output "Version_current: $version"
-          echo "::set-output name=version::$version"
-          } 
 
-          # Increment the version
-          $incremented_version = $version -split '\.' 
-          $incremented_version[-1] = [int]$incremented_version[-1] + 1
-          $incremented_version = $incremented_version -join '.'
-          Write-Output "Incremented Version: $incremented_version"  
-          # Replace the version in the file
+
+          # Read the content of the versions.yml file into a single string
+
+          $fileContent = Get-Content "${{ github.workspace }}\versions.yml" | Out-String
+
+
+          Write-Output "File Content: $fileContent"  # Debugging line
+
+
+          # Regex to match version for the selected config (e.g., DE)
+
+          $regex = [regex]"$($config):\s*""(.+?)"""  # Corrected regex pattern
+
+
+          Write-Output "Regex: $regex"  # Debugging line  
+
+
+          # Perform the regex match
+
+          if ($fileContent -match $regex) {
+
+          $version = $matches[1]
+
+          Write-Output "Version_current: $version"
+
+          echo "::set-output name=version::$version"
+
+          }
+
+
+          # Use the already incremented version passed from the previous step
+
+          $incremented_version = $env:INPUT_VERSION
+
+          Write-Output "Using Incremented Version: $incremented_version"  
+
+
+          # Replace the version in the file for the specified config (DE)
+
           $fileContent = $fileContent -replace "$($config):\s*""$version""", "$($config): `"$incremented_version`""
+
           Set-Content "${{ github.workspace }}\versions.yml" -Value $fileContent
-          # Git operations
+
+
+          # Git operations to commit the change
+
           git add "${{ github.workspace }}\versions.yml"
-          git commit -m "Increment version for $config to $incremented_version"
+
+          git commit -m "Update version for $config to $incremented_version"
+
           git push origin develop
         shell: PowerShell
         env:
           JAVA_HOME: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\11.0.25-9\x64
+          INPUT_VERSION: ${{ steps.increment_version.outputs.incremented_version }}
