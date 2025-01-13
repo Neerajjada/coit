@@ -26,7 +26,7 @@ jobs:
   id: read_version
   run: |
     $config = "DE"
-    $fileContent = Get-Content "${{ github.workspace }}\release-versions\versions.yml"
+    $fileContent = Get-Content "${{ github.workspace }}\versions.yml"
     $regex = [regex]"$($config):\s*(.+)"
     if ($fileContent -match $regex) {
         $version = $matches[1]
@@ -55,7 +55,7 @@ jobs:
                git reset HEAD .
                git restore --source=HEAD --staged -- .
                git restore --source=HEAD -- .
-               git checkout HEAD -- release-versions\versions.yml
+               git checkout HEAD -- versions.yml
                $config = "DE"
                $incremented_version = "${{ steps.increment_version.outputs.incremented_version }}"
                $versions = Get-Content "${{ github.workspace }}\versions.yml" | ConvertFrom-Yaml
