@@ -64,10 +64,14 @@ jobs:
           $config = "DE"
           
           $incremented_version = $env:INPUT_VERSION
+
+          $file_path = "${{ github.workspace }}\versions.yml"
           
-          $fileContent = (Get-Content "${{ github.workspace }}\versions.yml" | Out-String) -replace "$($config):\s*""(.+?)""", "$($config): `"$incremented_version`""
+          $fileContent = Get-Content $file_path | Out-String
           
-          Set-Content "${{ github.workspace }}\versions.yml" -Value $fileContent
+          $updatedContent = $fileContent -replace "$($config):\s*""(.+?)""", "$($config): `"$incremented_version`""
+          
+          Set-Content -Path $file_path -Value $updatedContent
           
           # Git operations to commit the change
           git add "${{ github.workspace }}\versions.yml"
