@@ -70,6 +70,7 @@ jobs:
           if ($fileContent -match $regex) {
           
           $version = $matches[1]
+          
           Write-Output "Version_current: $version"
           echo "::set-output name=version::$version"
           } 
